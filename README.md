@@ -365,6 +365,27 @@ Website: https://www.ncaa.com/schools-index
 
 `GET /schools-index`
 
+### Special Instructions for NCAA D1 Men's Lacrosse
+
+When working with NCAA Division 1 Men's Lacrosse data, there is a specific nuance for retrieving game details (like box scores, play-by-play, etc.) after fetching a scoreboard:
+
+1.  **Fetch the Scoreboard**: Use the standard scoreboard endpoint:
+    `GET /scoreboard/lacrosse-men/d1/YYYY/MM/all-conf`
+    (This works for current seasons like 2025 and recent historical seasons like 2024 using the NCAA's JSON data source `data.ncaa.com/casablanca/...`)
+
+2.  **Identify the Correct Game ID**: In the JSON response for each game from the scoreboard:
+
+    - **DO NOT use the `game.gameID` field directly.** This ID can be ambiguous and may lead to data for other sports when used to fetch game details.
+    - **INSTEAD, parse the numeric ID from the `game.url` field.** For example, if `game.url` is `"/game/6448504"`, the correct ID to use for fetching details is `6448504`.
+
+3.  **Fetch Game Details**: Use the ID extracted from `game.url` with the standard game detail endpoints:
+    - `GET /game/EXTRACTED_ID/boxscore`
+    - `GET /game/EXTRACTED_ID/play-by-play`
+    - `GET /game/EXTRACTED_ID/team-stats`
+    - `GET /game/EXTRACTED_ID` (for base game info)
+
+Following this procedure will ensure you retrieve the correct D1 Men's Lacrosse data for game details.
+
 ## Deployment
 
 Use the included [docker-compose.yml](/docker-compose.yml) or run directly with docker:
